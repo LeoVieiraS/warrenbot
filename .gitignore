@@ -1,0 +1,6 @@
+banco.txt
+venv/
+.idea/
+__pycache__/
+
+.env
