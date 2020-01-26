@@ -40,6 +40,11 @@ class ControllerAlert:
                 pubsub.publish('alerts', [user_id, f"Valore invalidos, consulte o manual com /help"])
             return alerts_insert
 
+    @staticmethod
+    def delete(ticket, user_id):
+        DaoAlert = DaoAlerts()
+        DaoAlert.delete_alert(ticket, user_id)
+
 
 
 

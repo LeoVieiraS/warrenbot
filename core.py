@@ -1,11 +1,11 @@
-from telegram.ext import CommandHandler, Filters, Updater, MessageHandler
+from telegram.ext import CommandHandler, Filters, Updater
 from conf.settings import TELEGRAM_TOKEN
 from app.controllers.controller_alert import ControllerAlert
 from threading import Thread
 from time import sleep
 from app import pubsub
 from app.manager_queue import PubSubManager
-from  app.check_current_price import CurrentPrice
+from app.check_current_price import CurrentPrice
 from conf.database import Connection
 
 from datetime import datetime
@@ -81,6 +81,23 @@ def insert(update, context):
             text='Opa! Parece que vôce esqueceu de informar os parametros. Se tiver duvidas, consulte o manual com /manual'
         )
 
+def excluir(update, context):
+    if context.args:
+        user_id = update.message.chat_id
+        inserts = ControllerAlert.delete(context.args[0], user_id)
+        for i in inserts:
+            i = json.loads(i)
+            print(i)
+            context.bot.send_message(
+                chat_id=update.message.chat_id,
+                text=i
+            )
+    else:
+        context.bot.send_message(
+            chat_id=update.message.chat_id,
+            text='Opa! Parece que vôce esqueceu de informar os parametros. Se tiver duvidas, consulte o manual com /manual'
+        )
+
 
 def help(update, context):
     response_message = 'Menu ainda em construção'
@@ -114,7 +131,10 @@ def main():
         CommandHandler('listar', get_alerts, Filters.user(user_id=users_ids))
     )
     dispatcher.add_handler(
-        CommandHandler('insert', insert, Filters.user(user_id=users_ids), pass_args=True)
+        CommandHandler('inserir', insert, Filters.user(user_id=users_ids), pass_args=True)
+    )
+    dispatcher.add_handler(
+        CommandHandler('excluir', excluir, Filters.user(user_id=users_ids), pass_args=True)
     )
     dispatcher.add_handler(
         CommandHandler('help', help, Filters.user(user_id=users_ids))

@@ -49,7 +49,7 @@ class DaoAlerts(Connection):
 
     def update_alerts(self, alert):
         try:
-            DaoAlert = DaoAlerts()
+
             cur = self._db.cursor()
             sql = 'update alerts set down_percent = %s, up_percent = %s where ticket = %s and user_id = %s'
             cur.execute(sql, (alert.down_percent, alert.up_percent, alert.ticket, alert.user_id))
@@ -57,3 +57,13 @@ class DaoAlerts(Connection):
             return json.dumps(({alert.ticket: "Alerta atualizado com sucesso"}))
         except:
             return json.dumps(({alert.ticket: "erro ao inserir"}))
+
+    def delete_alert(self, ticket, user_id):
+        try:
+            cur = self._db.cursor()
+            sql = 'delete from alerts where ticket = %s and user_id = %s'
+            cur.execute(sql, (ticket, user_id))
+            self._db.commit()
+            pubsub.publish('alerts', [user_id, f"{ticket} excluido com sucesso "])
+        except:
+            pubsub.publish('alerts', [user_id, f"erro ao excluir {ticket}"])
