@@ -19,7 +19,7 @@ class GetLastPrice(Connection):
         return price
 
     def insert(self, ticket, price):
-        sql = 'insert into preco_ultimo_fechamento(ticket,preco) values(%s, %s)'
+        sql = 'insert into price_last_day(ticket,preco) values(%s, %s)'
 
         cur = self._db.cursor()
         cur.execute(sql, (ticket, price,))
@@ -27,13 +27,13 @@ class GetLastPrice(Connection):
 
     def drop_table(self):
         cur = self._db.cursor()
-        sql = 'drop table if exists preco_ultimo_fechamento'
+        sql = 'drop table if exists price_last_day'
         cur.execute(sql)
         self._db.commit()
 
     def create_table(self):
         cur = self._db.cursor()
-        sql = '''create table preco_ultimo_fechamento(
+        sql = '''create table price_last_day(
                             id serial primary key,
                             ticket varchar(20),
                             preco NUMERIC (4, 2)

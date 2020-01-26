@@ -14,9 +14,9 @@ class SetupDatabase(Connection):
         cur.execute(sql)
         self._db.commit()
 
-    def create_table_preco_ultimo_fechamento(self):
+    def create_table_price_last_day(self):
         cur = self._db.cursor()
-        sql = '''create table if not exists preco_ultimo_fechamento(id serial primary key,ticket varchar(20) not null,preco numeric(4,2) not null)'''
+        sql = '''create table if not exists price_last_day(id serial primary key,ticket varchar(20) not null,preco numeric(4,2) not null)'''
         cur.execute(sql)
         self._db.commit()
 
@@ -39,6 +39,6 @@ class SetupDatabase(Connection):
 if __name__ == "__main__":
     a = SetupDatabase()
     a.create_table_alerts()
-    a.create_table_preco_ultimo_fechamento()
+    a.create_table_price_last_day()
     a.create_table_last_alert()
     a.create_table_users()

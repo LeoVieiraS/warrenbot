@@ -70,7 +70,7 @@ class CurrentPrice(Connection):
     def get_last_price(self):
         last_prices = {}
 
-        sql = 'select ticket, preco from preco_ultimo_fechamento'
+        sql = 'select ticket, preco from price_last_day'
         cur = self._db.cursor()
         cur.execute(sql, )
         data = cur.fetchall()
