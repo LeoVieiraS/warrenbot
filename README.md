@@ -36,11 +36,6 @@ Você deve gerar uma API Token na [HG Brasil](https://hgbrasil.com/status/financ
     * renomear o arquivo .example_env para .env
     * Os tokens gerados anteriormente (Token telegram bot e HG Brasil) devem ser inseridos no arquivo .env em suas respectivas variaveis
 
-
-# Cron
-    A Cron é o agendador de tarefas padrão de sistemas Linux, iremos utiliza-lá para executar a tafera que atualiza o preço da ação no fechamento do pregão do dia anterior. 
-    A cron deverá executar o arquivo  check+last_price. py as 9:00 (Uma hora antes de o mercado abrir)
-
 # Usuários
     O Bot só ira responder a usuários com o ID cadastrado na tabela users
     
@@ -54,7 +49,7 @@ Você deve gerar uma API Token na [HG Brasil](https://hgbrasil.com/status/financ
 # Inicializar
     python3 core.py
     
-# Cadatrando alertas
+# Cadastrando alertas
     Para cadastrar um novo alerta, envie a seguinte mensagem ao bot:
     TICKET:PORCENTAGEM_QUEDA:PORCENTAGEM_ALTA
     Exemplo:
