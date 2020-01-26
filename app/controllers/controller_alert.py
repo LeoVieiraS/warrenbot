@@ -22,7 +22,7 @@ class ControllerAlert:
         for alert in alerts:
 
             alert = alert.split(":")
-            ticket = alert[0]
+            ticket = alert[0].upper()
             down_percent = alert[1]
             up_percent = alert[2]
 
