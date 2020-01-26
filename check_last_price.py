@@ -1,7 +1,7 @@
 from conf.database import Connection
 from pandas_datareader import data as wb
 from datetime import datetime, timedelta
-
+from time import sleep
 
 class GetLastPrice(Connection):
 
@@ -66,6 +66,7 @@ class GetLastPrice(Connection):
             for ticket, price in last_prices.items():
                 self.insert(ticket, price)
             self.close()
+            sleep(60)
 
 
 if __name__ == "__main__":

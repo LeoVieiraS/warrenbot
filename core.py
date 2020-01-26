@@ -6,18 +6,19 @@ from time import sleep
 from app import pubsub
 from app.manager_queue import PubSubManager
 from app.check_current_price import CurrentPrice
+from check_last_price import GetLastPrice
 from conf.database import Connection
 
 from datetime import datetime
 import json
 
+
 def start_monitoring():
 
     now = datetime.now()
-    print(now.hour)
 
     while True:
-        if now.hour > 9 and now.hour < 17:
+        if 9 < now.hour < 17:
             current_price = CurrentPrice()
             current_price.alerts = current_price.get_alerts()
             current_price.last_price = current_price.get_last_price()
@@ -31,6 +32,7 @@ def start(update, context):
         chat_id=update.message.chat_id,
         text=response_message
     )
+
 
 def notify_up(updater):
     sub = pubsub.subscribe('alerts')
@@ -48,9 +50,14 @@ def notify_up(updater):
         sleep(2)
 
 
+def get_last_price():
+    last_prices = GetLastPrice()
+    now = datetime.now()
+    while True:
+        if now.hour == 9 and now.minute == 00:
+            last_prices.last_price_tickets()
+            sleep(60)
 
-def notify_down(update):
-    pass
 
 def get_alerts(update, context):
     alerts = ControllerAlert.get_alert()
@@ -63,6 +70,7 @@ def get_alerts(update, context):
             chat_id=update.message.chat_id,
             text=response_message
         )
+
 
 def insert(update, context):
     if context.args:
@@ -78,8 +86,9 @@ def insert(update, context):
     else:
         context.bot.send_message(
             chat_id=update.message.chat_id,
-            text='Opa! Parece que vôce esqueceu de informar os parametros. Se tiver duvidas, consulte o manual com /manual'
+            text='Opa! Parece que vôce esqueceu de informar os parametros. Consulte o manual com /manual'
         )
+
 
 def excluir(update, context):
     if context.args:
@@ -95,7 +104,7 @@ def excluir(update, context):
     else:
         context.bot.send_message(
             chat_id=update.message.chat_id,
-            text='Opa! Parece que vôce esqueceu de informar os parametros. Se tiver duvidas, consulte o manual com /manual'
+            text='Opa! Parece que vôce esqueceu de informar os parametros. Consulte o manual com /manual'
         )
 
 
@@ -103,12 +112,14 @@ def help(update, context):
     response_message = 'Menu ainda em construção'
     context.bot.send_message(chat_id=update.message.chat_id, text=response_message)
 
+
 def unknown(update, context):
     response_message = "Não entendi. você pode consultar o menu de opções enviando /help"
     context.bot.send_message(
         chat_id=update.message.chat_id,
         text=response_message
     )
+
 
 def main():
 
@@ -121,8 +132,10 @@ def main():
 
     t1 = Thread(target=notify_up, args=[updater])
     t2 = Thread(target=start_monitoring)
+    t3 = Thread(target=get_last_price)
     t1.start()
     t2.start()
+    t3.start()
     dispatcher = updater.dispatcher
     dispatcher.add_handler(
         CommandHandler('start', start)
@@ -141,6 +154,8 @@ def main():
     )
     updater.start_polling()
     updater.idle()
+
+
 if __name__ == '__main__':
     print("press CTRL + C to cancel.")
 
