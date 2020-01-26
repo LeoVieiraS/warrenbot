@@ -64,8 +64,6 @@ class CurrentPrice(Connection):
                 elif CurrentPrice.calculator_price(value[1], last_price[0], price, type_check='down'):
                     pubsub.publish('alerts', [value[2], f"{ticket} caiu {value[1]}% ou mais"])
                     last_verify.insert(ticket, value[2])
-                else:
-                    print('quase mema bosta')
 
     def get_last_price(self):
         last_prices = {}

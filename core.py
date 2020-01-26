@@ -96,7 +96,6 @@ def excluir(update, context):
         inserts = ControllerAlert.delete(context.args[0], user_id)
         for i in inserts:
             i = json.loads(i)
-            print(i)
             context.bot.send_message(
                 chat_id=update.message.chat_id,
                 text=i
