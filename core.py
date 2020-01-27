@@ -60,29 +60,15 @@ def get_last_price():
 
 
 def get_alerts(update, context):
-    alerts = ControllerAlert.get_alert()
+    chat_id = update.message.chat_id
+    ControllerAlert.get_alerts(chat_id)
 
-    for alert in alerts:
-        ticket = alert.ticket
-        response_message = f'Ticket: {ticket} up percent: {alert.up_percent} down percent: {alert.down_percent}'
-
-        context.bot.send_message(
-            chat_id=update.message.chat_id,
-            text=response_message
-        )
 
 
 def insert(update, context):
     if context.args:
         user_id = update.message.chat_id
-        inserts = ControllerAlert.insert(context.args, user_id)
-        for i in inserts:
-            i = json.loads(i)
-            print(i)
-            context.bot.send_message(
-                chat_id=update.message.chat_id,
-                text=i
-            )
+        ControllerAlert.insert(context.args, user_id)
     else:
         context.bot.send_message(
             chat_id=update.message.chat_id,
@@ -93,13 +79,8 @@ def insert(update, context):
 def excluir(update, context):
     if context.args:
         user_id = update.message.chat_id
-        inserts = ControllerAlert.delete(context.args[0], user_id)
-        for i in inserts:
-            i = json.loads(i)
-            context.bot.send_message(
-                chat_id=update.message.chat_id,
-                text=i
-            )
+        ControllerAlert.delete_alert(context.args[0], user_id)
+
     else:
         context.bot.send_message(
             chat_id=update.message.chat_id,
