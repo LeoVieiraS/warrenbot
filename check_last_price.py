@@ -2,7 +2,8 @@ from conf.database import Connection
 from pandas_datareader import data as wb
 from datetime import datetime, timedelta
 from time import sleep
-
+# NECESSARIO REALIZAR O AGENDAMENTO NA CRON
+#Script responsavel por buscar o preço do ultimo pregão de cada ativo e inserir na tabela
 class GetLastPrice(Connection):
 
     @staticmethod
@@ -20,26 +21,25 @@ class GetLastPrice(Connection):
 
     def insert(self, ticket, price):
         sql = 'insert into price_last_day(ticket,preco) values(%s, %s)'
-
-        cur = self._db.cursor()
+        cur = self.cursor()
         cur.execute(sql, (ticket, price,))
         self._db.commit()
 
     def drop_table(self):
-        cur = self._db.cursor()
+        cur = self.cursor()
         sql = 'drop table if exists price_last_day'
         cur.execute(sql)
         self._db.commit()
 
     def create_table(self):
-        cur = self._db.cursor()
+        cur = self.cursor()
         sql = '''create table price_last_day(
                             id serial primary key,
                             ticket varchar(20),
                             preco NUMERIC (4, 2)
                         )'''
         cur.execute(sql)
-        self._db.commit()
+        self.commit()
 
     def last_price_tickets(self, new_ticket=None):
         last_prices = {}
@@ -53,7 +53,7 @@ class GetLastPrice(Connection):
         else:
             self.drop_table()
             self.create_table()
-            cur = self._db.cursor()
+            cur = self.cursor()
             sql = 'select distinct on (ticket) ticket from alerts'
             cur.execute(sql)
             data = cur.fetchall()

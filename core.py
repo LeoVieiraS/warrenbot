@@ -8,7 +8,6 @@ from app.manager_queue import PubSubManager
 from app.check_current_price import CurrentPrice
 from check_last_price import GetLastPrice
 from conf.database import Connection
-
 from datetime import datetime
 import json
 
@@ -18,7 +17,7 @@ def start_monitoring():
     now = datetime.now()
 
     while True:
-        if 9 < now.hour < 17:
+        if 9 < now.hour < 25:
             current_price = CurrentPrice()
             current_price.alerts = current_price.get_alerts()
             current_price.last_price = current_price.get_last_price()

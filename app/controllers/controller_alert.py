@@ -98,13 +98,6 @@ class ControllerAlert:
             pubsub.publish('alerts', [alert.user_id, f"erro ao atualizar alerta"])
 
 
-
-
-
-
-
-
-
 if __name__ == "__main__":
     a = ControllerAlert()
 
