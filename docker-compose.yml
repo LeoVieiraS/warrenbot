@@ -1,0 +1,36 @@
+version: '3'
+services:
+  app:
+    build: .
+    #ports:
+    #  - "3000:3000"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    networks:
+      - local-network
+    environment:
+      - TELEGRAM_TOKEN=698098996:AAEYZ0wZJtgzcRS3Xt5jblMGUuRa2GvSq4k
+      - HGBRASIL=a29118c3
+      - HOST=warrenbot-postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=warrenbot
+      - POSTGRES_DATABASE=warrenbot
+  db:
+    image: postgres
+    container_name: warrenbot-postgres
+    volumes:
+      - /home/leo/postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: "warrenbot"
+    ports:
+      - "5432:5432"
+    networks:
+      - local-network
+networks:
+  local-network:
+    name: warrenbot-network
+volumes:
+  postgres-data:
+   
