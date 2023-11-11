@@ -1,15 +1,18 @@
-from conf.database import Connection
 import json
-import requests
-from conf.settings import HGBRASIL
 from datetime import datetime
 from time import sleep
+
+import requests
+
 from app import pubsub
 from app.last_verify import LastVerify
+from conf.database import Connection
+from conf.settings import HGBRASIL
+
 # from core import notify_up, notify_down
 
-class CurrentPrice(Connection):
 
+class CurrentPrice(Connection):
     def __init__(self):
         super().__init__()
         self.alerts = self.__dict__
@@ -17,31 +20,26 @@ class CurrentPrice(Connection):
 
     @staticmethod
     def data_api(ticket):
-
-        url = 'https://api.hgbrasil.com/finance/stock_price?key={}&symbol={}'.format(HGBRASIL, ticket)
+        url = "https://api.hgbrasil.com/finance/stock_price?key={}&symbol={}".format(
+            HGBRASIL, ticket
+        )
         r = requests.get(url).text
         data = json.loads(r)
         data = data["results"][ticket]
         return data["price"]
 
-
-
     @staticmethod
     def calculator_price(percent, last_price, price, type_check):
-
         different_value = (last_price / 100) * percent
 
-        if type_check == 'up':
-
-
+        if type_check == "up":
             expected_price = last_price + different_value
 
             if price >= expected_price:
                 return True
             else:
                 return False
-        elif type_check == 'down':
-
+        elif type_check == "down":
             expected_price = last_price - different_value
 
             if price <= expected_price:
@@ -52,37 +50,44 @@ class CurrentPrice(Connection):
             return False
 
     def verify(self):
-
         for ticket, value in self.alerts.items():
             last_price = self.last_price[ticket]
             last_verify = LastVerify()
             if last_verify.get(ticket, value[2]):
                 price = CurrentPrice.data_api(ticket)
-                if CurrentPrice.calculator_price(value[1], last_price[0], price, type_check='up'):
-                    pubsub.publish('alerts', [value[2], f"{ticket} subiu {value[1]}% ou mais"])
+                if CurrentPrice.calculator_price(
+                    value[1], last_price[0], price, type_check="up"
+                ):
+                    pubsub.publish(
+                        "alerts", [value[2], f"{ticket} subiu {value[1]}% ou mais"]
+                    )
                     last_verify.insert(ticket, value[2])
-                elif CurrentPrice.calculator_price(value[1], last_price[0], price, type_check='down'):
-                    pubsub.publish('alerts', [value[2], f"{ticket} caiu {value[1]}% ou mais"])
+                elif CurrentPrice.calculator_price(
+                    value[1], last_price[0], price, type_check="down"
+                ):
+                    pubsub.publish(
+                        "alerts", [value[2], f"{ticket} caiu {value[1]}% ou mais"]
+                    )
                     last_verify.insert(ticket, value[2])
 
     def get_last_price(self):
         last_prices = {}
 
-        sql = 'select ticket, preco from price_last_day'
+        sql = "select ticket, preco from price_last_day"
         cur = self.cursor()
         count = 0
         while count < 5:
             try:
-                cur.execute(sql, )
+                cur.execute(
+                    sql,
+                )
 
                 break
-            except:
+            except Exception:
                 sleep(5)
                 count += 1
 
         data = cur.fetchall()
-            
-
 
         for i in data:
             ticket = str(i[0])
@@ -92,11 +97,12 @@ class CurrentPrice(Connection):
         return last_prices
 
     def get_alerts(self):
-
-        sql = 'select ticket, up_percent, down_percent, user_id from alerts'
+        sql = "select ticket, up_percent, down_percent, user_id from alerts"
 
         cur = self.cursor()
-        cur.execute(sql,)
+        cur.execute(
+            sql,
+        )
         data = cur.fetchall()
         alerts = {}
         for i in data:

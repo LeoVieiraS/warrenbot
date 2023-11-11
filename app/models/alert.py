@@ -1,9 +1,11 @@
-from pandas_datareader import data as wb
 import datetime
-from pandas_datareader._utils import RemoteDataError
-from datetime import date, timedelta
-class Alert(object):
+from datetime import timedelta
 
+from pandas_datareader import data as wb
+from pandas_datareader._utils import RemoteDataError
+
+
+class Alert(object):
     def __init__(self, ticket, down_percent, up_percent, user_id):
         self.ticket = ticket
         self.down_percent = down_percent
@@ -14,9 +16,9 @@ class Alert(object):
         pass
 
     def is_ticket(self):
-        yesterday = (datetime.datetime.now() - timedelta(1)).strftime('%Y-%m-%d')
+        yesterday = (datetime.datetime.now() - timedelta(1)).strftime("%Y-%m-%d")
         try:
-            wb.DataReader(self.ticket+'.SA', data_source='yahoo', start=yesterday)
+            wb.DataReader(self.ticket + ".SA", data_source="yahoo", start=yesterday)
             return True
         except RemoteDataError:
             return False

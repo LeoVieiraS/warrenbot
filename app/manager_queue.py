@@ -1,18 +1,17 @@
-import unittest
 from app import pubsub
 
-class PubSubManager():
 
+class PubSubManager:
     @staticmethod
     def new_queue(channel):
         pubsub.subscribe(channel)
 
     def test_subscribe(self):
-        pubsub.publish('test', 'hello world')
+        pubsub.publish("test", "hello world")
 
     def test_unsubscribe(self):
-        sub = pubsub.subscribe('test')
-        pubsub.publish('test', 'hello world 1')
+        sub = pubsub.subscribe("test")
+        pubsub.publish("test", "hello world 1")
         sub.unsubscribe()
-        pubsub.publish('test', 'hello world 2')
-        msgs = list(sub.listen(block=False))
+        pubsub.publish("test", "hello world 2")
+        # msgs = list(sub.listen(block=False))

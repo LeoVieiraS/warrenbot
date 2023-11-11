@@ -4,3 +4,4 @@ python-telegram-bot==20.6
 requests==2.22.0
 pandas_datareader==0.10.0
 six==1.16.0
+ruff==0.1.5

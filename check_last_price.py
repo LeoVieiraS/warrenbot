@@ -1,43 +1,56 @@
-from conf.database import Connection
-from pandas_datareader import data as wb
 from datetime import datetime, timedelta
 from time import sleep
-# NECESSARIO REALIZAR O AGENDAMENTO NA CRON
-#Script responsavel por buscar o preço do ultimo pregão de cada ativo e inserir na tabela
-class GetLastPrice(Connection):
 
+from pandas_datareader import data as wb
+
+from conf.database import Connection
+
+
+# NECESSARIO REALIZAR O AGENDAMENTO NA CRON
+# Script responsavel por buscar o preço do ultimo pregão de cada ativo e inserir na tabela
+class GetLastPrice(Connection):
     @staticmethod
     def check_ticket(ticket):
         today = datetime.now()
-        today = datetime.strftime(today, '%Y-%m-%d')
+        today = datetime.strftime(today, "%Y-%m-%d")
         yesterday = datetime.now() - timedelta(days=1)
-        yesterday = yesterday.strftime('%Y-%m-%d')
+        yesterday = yesterday.strftime("%Y-%m-%d")
         try:
-            preco_fechamento = wb.DataReader(ticket + '.SA', data_source='yahoo', start=today)['Adj Close']
-        except:
-            preco_fechamento = wb.DataReader(ticket + '.SA', data_source='yahoo', start=yesterday)['Adj Close']
+            preco_fechamento = wb.DataReader(
+                ticket + ".SA", data_source="yahoo", start=today
+            )["Adj Close"]
+        except Exception:
+            preco_fechamento = wb.DataReader(
+                ticket + ".SA", data_source="yahoo", start=yesterday
+            )["Adj Close"]
         price = str(preco_fechamento[0])
         return price
 
     def insert(self, ticket, price):
-        sql = 'insert into price_last_day(ticket,preco) values(%s, %s)'
+        sql = "insert into price_last_day(ticket,preco) values(%s, %s)"
         cur = self.cursor()
-        cur.execute(sql, (ticket, price,))
+        cur.execute(
+            sql,
+            (
+                ticket,
+                price,
+            ),
+        )
         self._db.commit()
 
     def drop_table(self):
         cur = self.cursor()
-        sql = 'drop table if exists price_last_day'
+        sql = "drop table if exists price_last_day"
         cur.execute(sql)
         self._db.commit()
 
     def create_table(self):
         cur = self.cursor()
-        sql = '''create table price_last_day(
+        sql = """create table price_last_day(
                             id serial primary key,
                             ticket varchar(20),
                             preco NUMERIC (4, 2)
-                        )'''
+                        )"""
         cur.execute(sql)
         self.commit()
 
@@ -54,7 +67,7 @@ class GetLastPrice(Connection):
             self.drop_table()
             self.create_table()
             cur = self.cursor()
-            sql = 'select distinct on (ticket) ticket from alerts'
+            sql = "select distinct on (ticket) ticket from alerts"
             cur.execute(sql)
             data = cur.fetchall()
             tickets = []
@@ -70,6 +83,5 @@ class GetLastPrice(Connection):
 
 
 if __name__ == "__main__":
-
     a = GetLastPrice()
     a.last_price_tickets()

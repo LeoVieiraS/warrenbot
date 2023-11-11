@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-#==============================================================================
+# ==============================================================================
 # Name:         pubsub
 # Purpose:      Simple publish & subscribe in pure python
 # Author:       Zhen Wang
 # Created:      23 Oct 2012
 # Licence:      MIT License
-#==============================================================================
+# ==============================================================================
 
-from six.moves.queue import Queue as queue, Empty
-from threading import Lock as lock
 from functools import partial
+from threading import Lock as lock
 
+from six.moves.queue import Empty
+from six.moves.queue import Queue as queue
 
 MAX_QUEUE = 100
-MAX_ID = 2 ** 31
+MAX_ID = 2**31
 PUBLISH_ID = True
 
 channels = {}
@@ -29,7 +30,7 @@ class UnsubscribeException(Exception):
 
 def subscribe(channel):
     if not channel:
-        raise ValueError('channel')
+        raise ValueError("channel")
 
     if channel not in channels:
         channels_lock.acquire()
@@ -49,9 +50,9 @@ def subscribe(channel):
 
 def unsubscribe(channel, msg_q):
     if not channel:
-        raise ValueError('channel')
+        raise ValueError("channel")
     if not msg_q:
-        raise ValueError('msg_q')
+        raise ValueError("msg_q")
     try:
         channels[channel].remove(msg_q)
     except ValueError:
@@ -71,9 +72,9 @@ def listen(msg_q, block=True, timeout=None):
 
 def publish(channel, data):
     if not channel:
-        raise ValueError('channel')
+        raise ValueError("channel")
     if not data:
-        raise ValueError('data')
+        raise ValueError("data")
 
     if channel not in channels:
         channels_lock.acquire()
@@ -105,4 +106,4 @@ def publish(channel, data):
             unsubscribe(channel, q)
             continue
 
-        q.put({'data': data, 'id': _id}, block=False)
+        q.put({"data": data, "id": _id}, block=False)
